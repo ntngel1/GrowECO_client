@@ -5,7 +5,6 @@
 #include "restclient-cpp/connection.h"
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QString>
 #include <exception>
 #include <string>
 
@@ -65,4 +64,6 @@ public:
 private:
     RestClient::Connection *connection;
 };
+
+
 #endif // SERVERCONTROLLER_H

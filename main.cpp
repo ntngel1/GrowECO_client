@@ -3,25 +3,26 @@
 #include "servercontroller.h"
 #include "exception"
 #include "iostream"
+#include <QThread>
+
+Server::ServerController server;
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-    Server::ServerController server;
     try
     {
         server.signIn("", "");
-        Server::ServerController::SensorsData data = server.getSensorsData("");
-        w.setSensorValue(MainWindow::SensorType::AirHumidity, data.AirHumidity);
-        w.setSensorValue(MainWindow::SensorType::AirTemperature, data.AirTemperature);
-        w.setSensorValue(MainWindow::SensorType::GroundHumidity, data.GroundHumidity);
-        w.setSensorValue(MainWindow::SensorType::GroundTemperature, data.GroundTemperature);
     }
     catch (Server::RequestException& ex)
     {
-        std::cout << "test: " << ex.what() << std::endl;
+        std::cout << "excep: " << ex.what() << std::endl;
     }
+    SensorDataUpdaterThread thr("test_thr");
+    thr.w = &w;
+    thr.start();
 
 
     return a.exec();

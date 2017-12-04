@@ -25,10 +25,24 @@ bool ServerController::signIn(QString login, QString password) throw (Server::Re
         throw ex;
     }
 
-    if (res.code == 200)
+    if (res.code == 200) {
+        this->login = login;
+        this->password = password;
         return true;
+    }
 
     return false;
+}
+
+bool ServerController::isSignedIn()
+{
+    if (login == "" || password == "")
+        return false;
+
+    if (signIn(login, password))
+        return true;
+    else
+        return false;
 }
 
 ServerController::AccountData ServerController::getAccountData(void) const throw (Server::RequestException)

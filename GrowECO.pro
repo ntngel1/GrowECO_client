@@ -26,14 +26,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    servercontroller.cpp
+    servercontroller.cpp \
+    login.cpp
 
 HEADERS += \
         mainwindow.h \
-    servercontroller.h
+    servercontroller.h \
+    login.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    login.ui
 
 macx: LIBS += -L$$PWD/../../../../../../usr/local/lib/ -lrestclient-cpp
 

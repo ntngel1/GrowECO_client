@@ -57,12 +57,15 @@ public:
     ~ServerController(void);
 
     bool signIn(QString login, QString password) throw (Server::RequestException);
+    bool isSignedIn();
 
     AccountData getAccountData(void) const throw (Server::RequestException);
     SensorsData getSensorsData(QString deviceID) const throw (Server::RequestException);
 
 private:
     RestClient::Connection *connection;
+    QString login;
+    QString password;
 };
 
 

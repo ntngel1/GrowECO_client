@@ -6,7 +6,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <exception>
-#include <string>
+#include <QString>
 
 namespace Server {
 class ServerController;
@@ -47,19 +47,19 @@ public:
     };
 
     struct AccountData {
-        std::string name;
-        std::string username;
-        std::string email;
+        QString name;
+        QString username;
+        QString email;
     };
 
 public:
     ServerController(void);
     ~ServerController(void);
 
-    bool signIn(std::string login, std::string password) throw (Server::RequestException);
+    bool signIn(QString login, QString password) throw (Server::RequestException);
 
     AccountData getAccountData(void) const throw (Server::RequestException);
-    SensorsData getSensorsData(std::string deviceID) const throw (Server::RequestException);
+    SensorsData getSensorsData(QString deviceID) const throw (Server::RequestException);
 
 private:
     RestClient::Connection *connection;

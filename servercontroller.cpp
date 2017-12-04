@@ -14,9 +14,9 @@ ServerController::~ServerController(void)
 {}
 
 //TODO Exceptions
-bool ServerController::signIn(std::string login, std::string password) throw (Server::RequestException)
+bool ServerController::signIn(QString login, QString password) throw (Server::RequestException)
 {
-    connection->SetBasicAuth(login, password);
+    connection->SetBasicAuth(login.toStdString(), password.toStdString());
     connection->SetTimeout(5);
 
     RestClient::Response res = connection->get("/account/get");
@@ -41,16 +41,16 @@ ServerController::AccountData ServerController::getAccountData(void) const throw
     QJsonObject json = doc.object();
 
     ServerController::AccountData data;
-    data.name = json.value("name").toString().toStdString();
-    data.email = json.value("email").toString().toStdString();
-    data.username = json.value("username").toString().toStdString();
+    data.name = json.value("name").toString();
+    data.email = json.value("email").toString();
+    data.username = json.value("username").toString();
 
     return data;
 }
 
-ServerController::SensorsData ServerController::getSensorsData(std::string deviceID) const throw (Server::RequestException)
+ServerController::SensorsData ServerController::getSensorsData(QString deviceID) const throw (Server::RequestException)
 {
-    RestClient::Response res = connection->get("/sensors/get/" + deviceID);
+    RestClient::Response res = connection->get("/sensors/get/" + deviceID.toStdString());
     if (res.code != 200)
         throw Server::RequestException(res.code);
 

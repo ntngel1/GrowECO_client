@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 #include <QThread>
-#include <Qstring>
 #include "servercontroller.h"
 #include <QDebug>
 
@@ -51,21 +50,20 @@ public:
 
     void run()
     {
-        if (device_id != "")
         while (true) {
-            try
-            {
-                Server::ServerController::SensorsData d = server.getSensorsData(device_id);
-                w->setSensorValue(MainWindow::SensorType::AirHumidity, d.AirHumidity);
-                w->setSensorValue(MainWindow::SensorType::AirTemperature, d.AirTemperature);
-                w->setSensorValue(MainWindow::SensorType::GroundHumidity, d.GroundHumidity);
-                w->setSensorValue(MainWindow::SensorType::GroundTemperature, d.GroundTemperature);
+            if (device_id != "" && server.isSignedIn()) {
+                try {
+                    Server::ServerController::SensorsData d = server.getSensorsData(device_id);
+                    w->setSensorValue(MainWindow::SensorType::AirHumidity, d.AirHumidity);
+                    w->setSensorValue(MainWindow::SensorType::AirTemperature, d.AirTemperature);
+                    w->setSensorValue(MainWindow::SensorType::GroundHumidity, d.GroundHumidity);
+                    w->setSensorValue(MainWindow::SensorType::GroundTemperature, d.GroundTemperature);
+                }
+                catch (Server::RequestException& ex) {
+                    qDebug() << "Error from SensorDataUpdaterThread: " << ex.what() << '\n';
+                }
+                msleep(1000);
             }
-            catch (Server::RequestException& ex)
-            {
-                qDebug() << "Error: " << ex.what() << '\n';
-            }
-            msleep(1000);
         }
     }
 

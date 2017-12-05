@@ -1,5 +1,4 @@
 #include "servercontroller.h"
-#include "iostream"
 
 #define SERVER_URL "http://localhost:5000"
 using namespace Server;
@@ -20,34 +19,36 @@ bool ServerController::signIn(QString login, QString password) throw (Server::Re
     connection->SetTimeout(5);
 
     RestClient::Response res = connection->get("/account/get");
-    if (res.code != 200 && res.code != 401) {
-        RequestException ex(res.code);
-        throw ex;
-    }
 
-    if (res.code == 200) {
-        this->login = login;
-        this->password = password;
-        return true;
-    }
+    switch (res.code) {
+        case 200:
+            isAuthorized = true;
+            return true;
 
-    return false;
+        case 401:
+            isAuthorized = false;
+            return false;
+
+        default:
+            RequestException ex(res.code);
+            throw ex;
+    }
 }
 
 bool ServerController::isSignedIn()
 {
-    if (login == "" || password == "")
-        return false;
-
-    if (signIn(login, password))
-        return true;
-    else
-        return false;
+    return isAuthorized;
 }
 
-ServerController::AccountData ServerController::getAccountData(void) const throw (Server::RequestException)
+ServerController::AccountData ServerController::getAccountData(void) throw (Server::RequestException)
 {
     RestClient::Response res = connection->get("/account/get");
+
+    if (res.code == 401) {
+        isAuthorized = false;
+        throw Server::RequestException(res.code);
+    }
+
     if (res.code != 200)
         throw Server::RequestException(res.code);
 
@@ -62,9 +63,15 @@ ServerController::AccountData ServerController::getAccountData(void) const throw
     return data;
 }
 
-ServerController::SensorsData ServerController::getSensorsData(QString deviceID) const throw (Server::RequestException)
+ServerController::SensorsData ServerController::getSensorsData(QString deviceID) throw (Server::RequestException)
 {
     RestClient::Response res = connection->get("/sensors/get/" + deviceID.toStdString());
+
+    if (res.code == 401) {
+        isAuthorized = false;
+        throw Server::RequestException(res.code);
+    }
+
     if (res.code != 200)
         throw Server::RequestException(res.code);
 

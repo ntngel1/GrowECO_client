@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>GrowECO</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QGroupBox" name="groupBox">
@@ -233,12 +233,18 @@
     <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="accountChange"/>
+    <addaction name="action"/>
    </widget>
    <addaction name="menu"/>
   </widget>
   <action name="accountChange">
    <property name="text">
     <string>Сменить...</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>Выйти</string>
    </property>
   </action>
  </widget>

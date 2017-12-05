@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "login.h"
-#include <QDebug>
+#include "logindialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -40,6 +39,7 @@ void MainWindow::setSensorValue(SensorType type, int value)
 
 void MainWindow::on_accountChange_triggered()
 {
-    Login *l = new Login();
-    l->show();
+    LoginDialog l;
+    l.setModal(true);
+    l.exec();
 }

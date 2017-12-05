@@ -27,16 +27,16 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     servercontroller.cpp \
-    login.cpp
+    logindialog.cpp
 
 HEADERS += \
         mainwindow.h \
     servercontroller.h \
-    login.h
+    logindialog.h
 
 FORMS += \
         mainwindow.ui \
-    login.ui
+    logindialog.ui
 
 macx: LIBS += -L$$PWD/../../../../../../usr/local/lib/ -lrestclient-cpp
 

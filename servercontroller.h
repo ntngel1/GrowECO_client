@@ -6,7 +6,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <exception>
-#include <QString>
 
 namespace Server {
 class ServerController;
@@ -59,13 +58,12 @@ public:
     bool signIn(QString login, QString password) throw (Server::RequestException);
     bool isSignedIn();
 
-    AccountData getAccountData(void) const throw (Server::RequestException);
-    SensorsData getSensorsData(QString deviceID) const throw (Server::RequestException);
+    AccountData getAccountData(void) throw (Server::RequestException);
+    SensorsData getSensorsData(QString deviceID) throw (Server::RequestException);
 
 private:
     RestClient::Connection *connection;
-    QString login;
-    QString password;
+    bool isAuthorized = false;
 };
 
 

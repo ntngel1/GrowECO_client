@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>319</height>
+    <height>302</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -233,18 +233,42 @@
     <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="accountChange"/>
-    <addaction name="action"/>
+    <addaction name="signUp"/>
+    <addaction name="quit"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>Устройство</string>
+    </property>
+    <addaction name="deviceChange"/>
+    <addaction name="deviceRegister"/>
    </widget>
    <addaction name="menu"/>
+   <addaction name="menu_2"/>
   </widget>
   <action name="accountChange">
    <property name="text">
     <string>Сменить...</string>
    </property>
   </action>
-  <action name="action">
+  <action name="quit">
    <property name="text">
     <string>Выйти</string>
+   </property>
+  </action>
+  <action name="signUp">
+   <property name="text">
+    <string>Регистрация</string>
+   </property>
+  </action>
+  <action name="deviceChange">
+   <property name="text">
+    <string>Сменить...</string>
+   </property>
+  </action>
+  <action name="deviceRegister">
+   <property name="text">
+    <string>Зарегистрировать</string>
    </property>
   </action>
  </widget>

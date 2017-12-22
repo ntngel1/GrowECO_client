@@ -27,16 +27,30 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     servercontroller.cpp \
-    logindialog.cpp
+    logindialog.cpp \
+    registrationdialog.cpp \
+    devicechangedialog.cpp \
+    deviceregisterdialog.cpp \
+    devicechangenamedialog.cpp
 
 HEADERS += \
         mainwindow.h \
     servercontroller.h \
-    logindialog.h
+    logindialog.h \
+    registrationdialog.h \
+    serverexceptions.h \
+    devicechangedialog.h \
+    idevicehandler.h \
+    deviceregisterdialog.h \
+    devicechangenamedialog.h
 
 FORMS += \
         mainwindow.ui \
-    logindialog.ui
+    logindialog.ui \
+    registrationdialog.ui \
+    devicechangedialog.ui \
+    deviceregisterdialog.ui \
+    devicechangenamedialog.ui
 
 macx: LIBS += -L$$PWD/../../../../../../usr/local/lib/ -lrestclient-cpp
 

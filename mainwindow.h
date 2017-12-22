@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QThread>
 #include "servercontroller.h"
+#include "idevicehandler.h"
 #include <QDebug>
 
 extern Server::ServerController server;
@@ -37,13 +38,21 @@ private slots:
 
     void on_accountChange_triggered();
 
+    void on_signUp_triggered();
+
+    void on_deviceChange_triggered();
+
+    void on_quit_triggered();
+
+    void on_deviceRegister_triggered();
+
 private:
     Ui::MainWindow *ui;
 };
 
 
 
-class SensorDataUpdaterThread : public QThread
+class SensorDataUpdaterThread : public QThread, public IDeviceHandler
 {
 public:
     explicit SensorDataUpdaterThread(QString threadName) : name(threadName), device_id("") {}
@@ -58,9 +67,8 @@ public:
                     w->setSensorValue(MainWindow::SensorType::AirTemperature, d.AirTemperature);
                     w->setSensorValue(MainWindow::SensorType::GroundHumidity, d.GroundHumidity);
                     w->setSensorValue(MainWindow::SensorType::GroundTemperature, d.GroundTemperature);
-                }
-                catch (Server::RequestException& ex) {
-                    qDebug() << "Error from SensorDataUpdaterThread: " << ex.what() << '\n';
+                } catch (...) {
+
                 }
                 msleep(1000);
             }

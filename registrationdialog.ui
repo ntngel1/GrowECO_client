@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>LoginDialog</class>
- <widget class="QDialog" name="LoginDialog">
+ <class>RegistrationDialog</class>
+ <widget class="QDialog" name="RegistrationDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>281</width>
-    <height>188</height>
+    <width>331</width>
+    <height>283</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Авторизация</string>
+   <string>Регистрация</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -42,7 +42,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Авторизация</string>
+        <string>Регистрация</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignHCenter|Qt::AlignTop</set>
@@ -76,9 +76,35 @@
       <number>5</number>
      </property>
      <item>
-      <widget class="QLineEdit" name="loginEdit">
+      <widget class="QLineEdit" name="nameEdit">
+       <property name="statusTip">
+        <string/>
+       </property>
+       <property name="placeholderText">
+        <string>Имя</string>
+       </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="usernameEdit">
        <property name="placeholderText">
         <string>Логин</string>
+       </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="emailEdit">
+       <property name="placeholderText">
+        <string>Email</string>
+       </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -90,12 +116,37 @@
        <property name="placeholderText">
         <string>Пароль</string>
        </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="passwordTryEdit">
+       <property name="echoMode">
+        <enum>QLineEdit::Password</enum>
+       </property>
+       <property name="placeholderText">
+        <string>Повторите пароль</string>
+       </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
     </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>6</number>
+     </property>
+     <property name="sizeConstraint">
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
      <item>
       <widget class="QPushButton" name="cancelButton">
        <property name="text">
@@ -107,19 +158,16 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="registerButton">
+      <widget class="QPushButton" name="loginButton">
        <property name="text">
-        <string>Регистрация</string>
-       </property>
-       <property name="autoDefault">
-        <bool>false</bool>
+        <string>Войти</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="loginButton">
+      <widget class="QPushButton" name="registerButton">
        <property name="text">
-        <string>Войти</string>
+        <string>Зарегистрироваться</string>
        </property>
        <property name="default">
         <bool>true</bool>

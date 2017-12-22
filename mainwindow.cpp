@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "logindialog.h"
+#include "registrationdialog.h"
+#include "devicechangedialog.h"
+#include "deviceregisterdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -42,4 +45,30 @@ void MainWindow::on_accountChange_triggered()
     LoginDialog l;
     l.setModal(true);
     l.exec();
+}
+
+void MainWindow::on_signUp_triggered()
+{
+    RegistrationDialog r;
+    r.setModal(true);
+    r.exec();
+}
+
+void MainWindow::on_deviceChange_triggered()
+{
+    DeviceChangeDialog d(NULL, dynamic_cast<IDeviceHandler*>(sensorsDisplayer));
+    d.setModal(true);
+    d.exec();
+}
+
+void MainWindow::on_quit_triggered()
+{
+    server.logout();
+}
+
+void MainWindow::on_deviceRegister_triggered()
+{
+    DeviceRegisterDialog d;
+    d.setModal(true);
+    d.exec();
 }

@@ -5,35 +5,15 @@
 #include "restclient-cpp/connection.h"
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
+#include <QVector>
 #include <exception>
+
+#include "serverexceptions.h"
 
 namespace Server {
 class ServerController;
-class RequestException;
 }
-
-class Server::RequestException : public std::exception
-{
-public:
-    RequestException(const int status_code) throw()
-        : status_code(status_code)
-    {}
-
-    ~RequestException() throw() {}
-
-    const char* what(void) const throw()
-    {
-        return (std::string("Request Error: ") + std::to_string(status_code)).c_str();
-    }
-
-    const int statusCode()
-    {
-        return status_code;
-    }
-
-private:
-    const int status_code;
-};
 
 class Server::ServerController
 {
@@ -51,17 +31,41 @@ public:
         QString email;
     };
 
+    struct RegisterData {
+        QString name;
+        QString username;
+        QString email;
+        QString password;
+    };
+
+    struct DeviceData {
+        QString deviceID;
+        QString name;
+    };
+
 public:
     ServerController(void);
     ~ServerController(void);
 
-    bool signIn(QString login, QString password) throw (Server::RequestException);
-    bool isSignedIn();
+    bool signIn(QString login, QString password) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException);
+    bool signUp(RegisterData d) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException, Server::ErrorMessageException);
+    void logout(void);
+    bool isSignedIn(void);
 
-    AccountData getAccountData(void) throw (Server::RequestException);
-    SensorsData getSensorsData(QString deviceID) throw (Server::RequestException);
+    AccountData getAccountData(void) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException);
+    SensorsData getSensorsData(QString deviceID) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException);
+    QVector<DeviceData> getDevices(void) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException);
+    QString getDeviceRegToken(void) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException);
+
+    void updateDevice(QString token, DeviceData data) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException);
 
 private:
+    void checkResponseCode(int code) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException);
+
+    QString deviceDataToJSON(DeviceData data) const;
+    QString registerDataToJSON(RegisterData data) const;
+    QString AccountDataToJSON(AccountData data) const;
+
     RestClient::Connection *connection;
     bool isAuthorized = false;
 };

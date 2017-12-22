@@ -5,35 +5,30 @@
 #include <QMessageBox>
 
 namespace Server {
-    class OwnerException;
     class AuthorizingException;
     class BadRequestException;
     class ErrorMessageException;
-    class InfoMessageException;
+    class NotFoundException;
 }
-
-class Server::OwnerException  : public QException
-{
-public:
-    OwnerException() {}
-    void raise() const {throw *this;}
-    OwnerException* clone() const {return new OwnerException(*this);}
-};
 
 class Server::AuthorizingException : public QException
 {
 public:
-    AuthorizingException() {}
-    void raise() const {throw *this;}
-    AuthorizingException* clone() const {return new AuthorizingException(*this);}
+    AuthorizingException(void) {}
+    void raise(void) const {throw *this;}
+    AuthorizingException* clone(void) const {return new AuthorizingException(*this);}
 };
 
 class Server::BadRequestException : public QException
 {
 public:
     BadRequestException(int status_code) : status_code(status_code) {}
-    void raise() const {throw *this;}
-    BadRequestException* clone() const {return new BadRequestException(*this);}
+    void raise(void) const {throw *this;}
+    BadRequestException* clone(void) const {return new BadRequestException(*this);}
+
+    void show(QWidget* parent) {QMessageBox::critical
+                (parent, "Ошибка!", "Ошибка запроса к серверу! Response Code: " + QString(status_code));
+    }
 
     int status_code;
 };
@@ -41,25 +36,24 @@ public:
 class Server::ErrorMessageException : public QException
 {
 public:
-    ErrorMessageException(QString message) : message(message) {}
-    void raise() const {throw *this;}
-    ErrorMessageException* clone() const {return new ErrorMessageException(*this);}
+    ErrorMessageException(QString jsonText) {} // TODO GETTING DATA FROM JSON TO EXCEPTION
+    void raise(void) const {throw *this;}
+    ErrorMessageException* clone(void) const {return new ErrorMessageException(*this);}
 
     void show(QWidget* parent) {QMessageBox::critical(parent, "Ошибка!", message);}
 
     QString message;
+    QString jsonText;
+    int errorCode;
 };
 
-class Server::InfoMessageException : public QException
+class Server::NotFoundException : public QException
 {
 public:
-    InfoMessageException(QString message) : message(message) {}
-    void raise() const {throw *this;}
-    InfoMessageException* clone() const {return new InfoMessageException(*this);}
-
-    void show(QWidget* parent) {QMessageBox::information(parent, "Ошибка!", message);}
-
-    QString message;
+    NotFoundException(void) {}
+    void raise(void) const {throw *this;}
+    NotFoundException* clone(void) const {return new NotFoundException(*this);}
+    void show(QWidget* parent) {QMessageBox::critical(parent, "Ошибка!", "Проверьте интернет-соединение!");}
 };
 
 #endif // SERVEREXCEPTIONS_H

@@ -2,11 +2,9 @@
 #include "ui_registrationdialog.h"
 #include "servercontroller.h"
 #include "serverexceptions.h"
-#include <QDebug>
+#include <QDebug>]
+#include <QMessageBox>
 #include "logindialog.h"
-
-
-extern Server::ServerController server;
 
 RegistrationDialog::RegistrationDialog(QWidget *parent) :
     QDialog(parent),
@@ -27,7 +25,7 @@ void RegistrationDialog::on_cancelButton_clicked()
 
 void RegistrationDialog::on_registerButton_clicked()
 {
-    Server::ServerController::RegisterData d;
+    AccountPostData d;
     d.name = ui->nameEdit->text();
     d.username = ui->usernameEdit->text();
     d.email = ui->emailEdit->text();
@@ -40,11 +38,7 @@ void RegistrationDialog::on_registerButton_clicked()
         return;
     }
 
-    try {
-        server.signUp(d);
-    } catch (Server::BadRequestException& e) {
-        qDebug() << e.status_code << '\n';
-    }
+    ServerController::signUp(d);
     this->close();
 }
 

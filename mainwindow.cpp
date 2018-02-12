@@ -4,40 +4,33 @@
 #include "registrationdialog.h"
 #include "devicechangedialog.h"
 #include "deviceregisterdialog.h"
+#include "devicesettingsdialog.h"
+#include "servercontroller.h"
+
+QString currentToken = "";
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->sensorsDisplayer = new SensorDataUpdaterThread("sensors_displayer");
-    this->sensorsDisplayer->w = this;
-    this->sensorsDisplayer->setDeviceID("1");
-    this->sensorsDisplayer->start();
+
+
+    QThread *sensorsUpdaterThread = new QThread();
+    SensorsUpdater *sensorsUpdater = new SensorsUpdater("sensors_updater", "");
+    sensorsUpdater->moveToThread(sensorsUpdaterThread);
+
+    connect(sensorsUpdaterThread, SIGNAL (started()), sensorsUpdater, SLOT (update()));
+    connect(sensorsUpdater, SIGNAL (dataReceived(SensorData)), this, SLOT(sensorsDataChanged(SensorData)));
+    connect(this, SIGNAL (updateTokenInUpdater(QString)) , sensorsUpdater, SLOT (receiveToken(QString)), Qt::DirectConnection);
+
+    sensorsUpdaterThread->start();
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::setSensorValue(SensorType type, int value)
-{
-    switch (type)
-    {
-    case GroundHumidity:
-        ui->gndHumLabel->setText(QString("%1%").arg(value));
-        break;
-    case GroundTemperature:
-        ui->gndTempLabel->setText(QString("%1°C").arg(value));
-        break;
-    case AirHumidity:
-        ui->airHumLabel->setText(QString("%1%").arg(value));
-        break;
-    case AirTemperature:
-        ui->airTempLabel->setText(QString("%1°C").arg(value));
-        break;
-    }
 }
 
 void MainWindow::on_accountChange_triggered()
@@ -56,14 +49,15 @@ void MainWindow::on_signUp_triggered()
 
 void MainWindow::on_deviceChange_triggered()
 {
-    DeviceChangeDialog d(NULL, dynamic_cast<IDeviceHandler*>(sensorsDisplayer));
+    DeviceChangeDialog d(NULL);
+    connect(&d, SIGNAL (deviceChanged(DeviceData)) , this, SLOT (deviceChanged(DeviceData)));
     d.setModal(true);
     d.exec();
 }
 
 void MainWindow::on_quit_triggered()
 {
-    server.logout();
+    ServerController::logout();
 }
 
 void MainWindow::on_deviceRegister_triggered()
@@ -71,4 +65,35 @@ void MainWindow::on_deviceRegister_triggered()
     DeviceRegisterDialog d;
     d.setModal(true);
     d.exec();
+}
+
+void MainWindow::on_waterButton_clicked()
+{
+    ActionPostData data;
+    data.code = 1;
+    ServerController::createAction(currentToken, data);
+}
+
+void MainWindow::on_deviceSettings_triggered()
+{
+    DeviceSettingsDialog d;
+    d.setModal(true);
+    d.exec();
+}
+
+void MainWindow::deviceChanged(DeviceData data)
+{
+    currentToken = data.token;
+    emit updateTokenInUpdater(data.token);
+    qDebug() << "TOken is " << data.token;
+}
+
+void MainWindow::sensorsDataChanged(SensorData data)
+{
+    ui->airHumLabel->setText(QString::number(data.airHumidity) + "%");
+    ui->airTempLabel->setText(QString::number(data.airTemperature) + "°C");
+    ui->gndHumLabel->setText(QString::number(data.groundHumidity) + "%");
+    ui->gndTempLabel->setText(QString::number(data.groundTemperature) + "°C");
+    ui->pressureLabel->setText(QString::number(data.pressure));
+    ui->waterBar->setValue(data.water);
 }

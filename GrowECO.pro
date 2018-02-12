@@ -31,7 +31,8 @@ SOURCES += \
     registrationdialog.cpp \
     devicechangedialog.cpp \
     deviceregisterdialog.cpp \
-    devicechangenamedialog.cpp
+    devicesettingsdialog.cpp \
+    sensorsupdater.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -40,9 +41,10 @@ HEADERS += \
     registrationdialog.h \
     serverexceptions.h \
     devicechangedialog.h \
-    idevicehandler.h \
     deviceregisterdialog.h \
-    devicechangenamedialog.h
+    devicesettingsdialog.h \
+    sensorsupdater.h \
+    serverstructs.h
 
 FORMS += \
         mainwindow.ui \
@@ -50,7 +52,8 @@ FORMS += \
     registrationdialog.ui \
     devicechangedialog.ui \
     deviceregisterdialog.ui \
-    devicechangenamedialog.ui
+    devicechangenamedialog.ui \
+    devicesettingsdialog.ui
 
 macx: LIBS += -L$$PWD/../../../../../../usr/local/lib/ -lrestclient-cpp
 

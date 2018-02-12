@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>302</height>
+    <height>288</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -189,30 +189,79 @@
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="waterButton">
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>20</y>
-      <width>101</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Графики</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_2">
-    <property name="geometry">
-     <rect>
-      <x>280</x>
-      <y>60</y>
-      <width>101</width>
+      <y>250</y>
+      <width>111</width>
       <height>32</height>
      </rect>
     </property>
     <property name="text">
      <string>Полить</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_5">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>10</y>
+      <width>121</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="title">
+     <string>Атм. дав. [мм рт.ст.]</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <widget class="QLabel" name="pressureLabel">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>101</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>24</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QProgressBar" name="waterBar">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>230</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="textVisible">
+     <bool>true</bool>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
     </property>
    </widget>
   </widget>
@@ -242,6 +291,7 @@
     </property>
     <addaction name="deviceChange"/>
     <addaction name="deviceRegister"/>
+    <addaction name="deviceSettings"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -269,6 +319,11 @@
   <action name="deviceRegister">
    <property name="text">
     <string>Зарегистрировать</string>
+   </property>
+  </action>
+  <action name="deviceSettings">
+   <property name="text">
+    <string>Настройки</string>
    </property>
   </action>
  </widget>

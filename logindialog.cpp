@@ -5,8 +5,6 @@
 #include "registrationdialog.h"
 #include "QDebug"
 
-extern Server::ServerController server;
-
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::LoginDialog)
@@ -29,17 +27,8 @@ void LoginDialog::on_loginButton_clicked()
             return;
         }
 
-        try {
-            server.signIn(ui->loginEdit->text(), ui->passwordEdit->text());
-        } catch (Server::AuthorizingException& e) {
-            QMessageBox::critical(this, "Ошибка!", "Неверный логин или пароль!");
-            return;
-        } catch (Server::NotFoundException& e) {
-            QMessageBox::critical(this, "Ошибка!", "Проверьте ваше интернет-соединение!");
-            return;
-        } catch (Server::BadRequestException& e) {
-            qDebug() << "Непредвиденная ошибка: " << e.status_code;
-            QMessageBox::critical(this, "Ошибка!", "Проверьте ваше интернет-соединение!");
+        if (!ServerController::signIn(ui->loginEdit->text(), ui->passwordEdit->text())) {
+            QMessageBox::warning(this, "Внимание!", "Неверный логин или пароль!");
             return;
         }
 

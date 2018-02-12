@@ -3,10 +3,10 @@
 
 #include <QDialog>
 #include <QListWidget>
-#include <QVector>
+#include <QList>
 
-#include "idevicehandler.h"
 #include "servercontroller.h"
+#include "serverstructs.h"
 
 namespace Ui {
 class DeviceChangeDialog;
@@ -17,8 +17,11 @@ class DeviceChangeDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit DeviceChangeDialog(QWidget *parent = 0, IDeviceHandler* deviceHandler = 0);
+    explicit DeviceChangeDialog(QWidget *parent = 0);
     ~DeviceChangeDialog();
+
+signals:
+    void deviceChanged(DeviceData data);
 
 private slots:
     void on_deviceList_itemDoubleClicked(QListWidgetItem *item);
@@ -27,8 +30,7 @@ private slots:
 
 private:
     Ui::DeviceChangeDialog *ui;
-    QVector<Server::ServerController::DeviceData> devices;
-    IDeviceHandler* deviceHandler;
+    QList<DeviceData> devices;
 };
 
 #endif // DEVICECHANGEDIALOG_H

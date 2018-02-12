@@ -8,7 +8,6 @@
 #include <QMessageBox>
 
 #include "servercontroller.h"
-#include "devicechangenamedialog.h"
 
 namespace Ui {
 class DeviceRegisterDialog;

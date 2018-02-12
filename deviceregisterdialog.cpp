@@ -1,14 +1,12 @@
 #include "deviceregisterdialog.h"
 #include "ui_deviceregisterdialog.h"
 
-extern Server::ServerController server;
-
 DeviceRegisterDialog::DeviceRegisterDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DeviceRegisterDialog)
 {
     ui->setupUi(this);
-    currentToken = server.getDeviceRegToken();
+    currentToken = ServerController::getDeviceRegToken();
     setToken(currentToken);
 }
 
@@ -31,13 +29,10 @@ void DeviceRegisterDialog::on_copyButton_clicked()
 
 void DeviceRegisterDialog::on_refreshButton_clicked()
 {
-    if (server.isSignedIn()) {
-        QString serverToken = server.getDeviceRegToken();
+    if (ServerController::isSignedIn()) {
+        QString serverToken = ServerController::getDeviceRegToken();
         if (serverToken != currentToken) {
             QMessageBox::information(this, "Успех!", "Вы успешно привязали устройство!");
-            DeviceChangeNameDialog d;
-            d.setModal(true);
-            d.exec();
             this->close();
         }
     }

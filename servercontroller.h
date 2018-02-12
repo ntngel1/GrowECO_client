@@ -6,68 +6,42 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
-#include <QVector>
+#include <QList>
 #include <exception>
 
+#include "serverstructs.h"
 #include "serverexceptions.h"
 
-namespace Server {
-class ServerController;
-}
-
-class Server::ServerController
+class ServerController
 {
 public:
-    struct SensorsData {
-        int GroundTemperature;
-        int GroundHumidity;
-        int AirTemperature;
-        int AirHumidity;
-    };
+    static void init(void);
 
-    struct AccountData {
-        QString name;
-        QString username;
-        QString email;
-    };
+    static bool signIn(QString login, QString password);
+    static bool signUp(AccountPostData d);
+    static void logout(void);
+    static bool isSignedIn(void);
 
-    struct RegisterData {
-        QString name;
-        QString username;
-        QString email;
-        QString password;
-    };
+    static AccountData getAccountData(void);
+    static QList<DeviceData> getDevices(void);
+    static QString getDeviceRegToken(void);
+    static SensorData getSensorData(QString token);
+    static SettingsData getSettingsData(QString token);
 
-    struct DeviceData {
-        QString deviceID;
-        QString name;
-    };
+    static void createAction(QString token, ActionPostData data);
 
-public:
-    ServerController(void);
-    ~ServerController(void);
-
-    bool signIn(QString login, QString password) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException);
-    bool signUp(RegisterData d) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException, Server::ErrorMessageException);
-    void logout(void);
-    bool isSignedIn(void);
-
-    AccountData getAccountData(void) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException);
-    SensorsData getSensorsData(QString deviceID) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException);
-    QVector<DeviceData> getDevices(void) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException);
-    QString getDeviceRegToken(void) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException);
-
-    void updateDevice(QString token, DeviceData data) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException);
+    static void updateDevice(QString token, DevicePostData data);
+    static void updateSettings(QString token, SettingsPostData data);
 
 private:
-    void checkResponseCode(int code) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException);
 
-    QString deviceDataToJSON(DeviceData data) const;
-    QString registerDataToJSON(RegisterData data) const;
-    QString AccountDataToJSON(AccountData data) const;
+    static void checkResponse(int code) throw (AuthorizingException);
 
-    RestClient::Connection *connection;
-    bool isAuthorized = false;
+    static RestClient::Connection *connection;
+    static bool isAuthorized;
+
+    ServerController(void);
+    ~ServerController(void);
 };
 
 

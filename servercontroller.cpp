@@ -1,10 +1,12 @@
+#include <QDebug>
 #include "servercontroller.h"
 
-#define SERVER_URL "http://localhost:5000"
-using namespace Server;
+#define SERVER_URL "https://groweco-dev.herokuapp.com"
 
+#define IF_FILLED(x) if(x!="")
 
-#include <QDebug>
+bool ServerController::isAuthorized = false;
+RestClient::Connection* ServerController::connection = new RestClient::Connection(SERVER_URL);
 
 ServerController::ServerController(void)
 {
@@ -14,9 +16,18 @@ ServerController::ServerController(void)
 }
 
 ServerController::~ServerController(void)
-{}
+{
 
-void ServerController::checkResponseCode(int code) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException)
+}
+
+void ServerController::init(void)
+{
+    RestClient::init();
+    connection = new RestClient::Connection(SERVER_URL);
+    connection->AppendHeader("Content-Type", "application/json");
+}
+
+void ServerController::checkResponse(int code) throw (AuthorizingException)
 {
     switch (code) {
         case 200:
@@ -24,55 +35,39 @@ void ServerController::checkResponseCode(int code) throw (Server::AuthorizingExc
             break;
         case 401:
             isAuthorized = false;
-            throw Server::AuthorizingException();
-            break;
-        case 404:
-            throw Server::NotFoundException();
+            throw AuthorizingException();
             break;
         default:
-            throw Server::BadRequestException(code);
+            qDebug() << "Error! Code: " << code;
+            break;
     }
 }
 
-QString ServerController::deviceDataToJSON(ServerController::DeviceData data) const
-{
-    QJsonObject json;
-
-    if (data.name != "")
-        json["name"] = data.name;
-
-    QJsonDocument doc(json);
-    return doc.toJson(QJsonDocument::Compact);
-}
-
-//TODO Exceptions
-bool ServerController::signIn(QString login, QString password) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException)
+bool ServerController::signIn(QString login, QString password)
 {
     connection->SetBasicAuth(login.toStdString(), password.toStdString());
     connection->SetTimeout(5);
 
-    RestClient::Response res = connection->get("/account/get");
-    checkResponseCode(res.code);
+    RestClient::Response res = connection->get("/user/get");
+
+    try {
+        checkResponse(res.code);
+    } catch (AuthorizingException) {
+        return false;
+    }
 
     isAuthorized = true;
     return true;
 }
 
-bool ServerController::signUp(ServerController::RegisterData d) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException,
-                                                                       Server::ErrorMessageException)
+bool ServerController::signUp(AccountPostData data)
 {
-    QJsonObject json;
-    json["name"] = d.name;
-    json["username"] = d.username;
-    json["email"] = d.email;
-    json["password"] = d.password;
-    QJsonDocument doc(json);
-    RestClient::Response res = connection->post("/account/register", doc.toJson(QJsonDocument::Compact).toStdString());
+    QString json = data.toJson();
+    RestClient::Response res = connection->post("/user/create", json.toStdString());
 
-    checkResponseCode(res.code);
-    if (res.code == 400) {
+    checkResponse(res.code);
 
-    }
+    return true;
 }
 
 void ServerController::logout(void)
@@ -86,67 +81,49 @@ bool ServerController::isSignedIn(void)
     return isAuthorized;
 }
 
-ServerController::AccountData ServerController::getAccountData(void) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException)
+AccountData ServerController::getAccountData(void)
 {
-    RestClient::Response res = connection->get("/account/get");
+}
 
-    checkResponseCode(res.code);
+SensorData ServerController::getSensorData(QString token)
+{
+    RestClient::Response res = connection->get("/sensors/get/" + token.toStdString());
 
-    QJsonDocument doc = QJsonDocument::fromJson(QByteArray(res.body.c_str()));
-    QJsonObject json = doc.object();
+    checkResponse(res.code);
 
-    ServerController::AccountData data;
-    data.name = json.value("name").toString();
-    data.email = json.value("email").toString();
-    data.username = json.value("username").toString();
+    SensorData data;
+    data.fromJson(res.body.c_str());
 
     return data;
 }
 
-ServerController::SensorsData ServerController::getSensorsData(QString deviceID) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException)
+SettingsData ServerController::getSettingsData(QString token)
 {
-    RestClient::Response res = connection->get("/sensors/get/" + deviceID.toStdString());
+    RestClient::Response res = connection->get("/settings/get/" + token.toStdString());
 
-    checkResponseCode(res.code);
-
-    QJsonDocument doc = QJsonDocument::fromJson(QByteArray(res.body.c_str()));
-    QJsonObject json = doc.object();
-
-    ServerController::SensorsData data;
-    data.AirTemperature = json.value("air_temperature").toInt();
-    data.AirHumidity = json.value("air_humidity").toInt();
-    data.GroundTemperature = json.value("ground_temperature").toInt();
-    data.GroundHumidity = json.value("ground_humidity").toInt();
+    SettingsData data;
+    data.fromJson(res.body.c_str());
 
     return data;
 }
 
-QVector<ServerController::DeviceData> ServerController::getDevices(void) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException)
+QList<DeviceData> ServerController::getDevices(void)
 {
     RestClient::Response res = connection->get("/device/get_devices");
 
-    checkResponseCode(res.code);
+    checkResponse(res.code);
 
-    QJsonDocument doc = QJsonDocument::fromJson(QByteArray(res.body.c_str()));
-    QJsonArray json = doc.array();
-    QVector<ServerController::DeviceData> devices;
-    devices.reserve(json.count());
-    for (uint i = 0; i < devices.capacity(); i++) {
-        QJsonObject device = json.at(i).toObject();
-        ServerController::DeviceData d;
-        d.deviceID = device["device_id"].toString();
-        d.name = device["name"].toString();
-        devices.push_back(d);
-    }
+    QList<DeviceData> data;
+    data = DeviceData::fromJsonArray(res.body.c_str());
 
-    return devices;
+    return data;
 }
 
-QString ServerController::getDeviceRegToken() throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException)
+QString ServerController::getDeviceRegToken()
 {
     RestClient::Response res = connection->get("/device/create_slot");
 
-    checkResponseCode(res.code);
+    checkResponse(res.code);
 
     QJsonDocument doc = QJsonDocument::fromJson(QByteArray(res.body.c_str()));
     QJsonObject json = doc.object();
@@ -154,10 +131,26 @@ QString ServerController::getDeviceRegToken() throw (Server::AuthorizingExceptio
     return json["token"].toString();
 }
 
-void ServerController::updateDevice(QString token, ServerController::DeviceData data) throw (Server::AuthorizingException, Server::NotFoundException, Server::BadRequestException)
+void ServerController::createAction(QString token, ActionPostData data)
 {
-    QString json = deviceDataToJSON(data);
+    QString json = data.toJson();
+    RestClient::Response res = connection->post("/actions/create/"+ token.toStdString(), json.toStdString());
+
+    checkResponse(res.code);
+}
+
+void ServerController::updateDevice(QString token, DevicePostData data)
+{
+    QString json = data.toJson();
     RestClient::Response res = connection->put("/device/update/"+token.toStdString(), json.toStdString());
 
-    checkResponseCode(res.code);
+    checkResponse(res.code);
+}
+
+void ServerController::updateSettings(QString token, SettingsPostData data)
+{
+    QString json = data.toJson();
+    RestClient::Response res = connection->put("/settings/update/"+token.toStdString(), json.toStdString());
+
+    checkResponse(res.code);
 }
